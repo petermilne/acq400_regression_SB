@@ -1,0 +1,199 @@
+            
+        
+           
+def plot_dataset(self, plot=True, save=False):
+        """Plot all data in dataset"""
+        
+        
+        PR.Red(f"args.plot is {plot}")
+        self.log.debug("Plotting dataset")
+        for uut in self.dataset:
+            self.log.debug(f"Plotting {uut}")
+            plt.figure(uut)
+            plt.clf()
+            plt.gcf().set_size_inches(8, 6)
+            plt.title(uut)
+            for chan, data in self.dataset[uut]['chans'].items():
+                PR.Yellow(f"CHAN {chan} DATA {data}")
+                
+                mask = np.full(len(data), True)
+                if len(self.dataset[uut].es_indexes) > 0:
+                    mask[self.dataset[uut].es_indexes] = False
+                plt.plot(data[mask], label=f"CH{chan}")
+
+            if hasattr(self.test, 'ideal_wave'):
+                plt.plot(self.test.ideal_wave, label=f"ideal_wave")
+            
+            custom_legend(plt)
+            
+            if save:
+                filename = f"{uut}.{self.test.timestamp}.png"
+                savepath = os.path.join(self.get_test_subdir(), filename)
+                self.log.info(f"Saving plot to {savepath}")
+                plt.savefig(savepath)
+        
+        if plot:
+            self.log.info("Plotting")
+            plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    def init_stream(self, uut, port=AcqPorts.STREAM, blen=10, runtime=10, max_data=None):
+        filename = f"{uut.hostname}.steam.temp"
+
+        self.uuts.spad('1,8,0')
+        
+        buffer = bytearray(blen * uut.data_size)
+        view = memoryview(buffer).cast('B')
+        viewlen = len(view)
+        print(f"buffer {buffer} {len(buffer)}")
+        print(f"view {view} {len(view)}")
+        
+        
+        
+        data = np.fromfile(filename, dtype=np.int16)
+        remainder = len(data) % uut.nchan()
+        print(remainder)
+        _data = data[:-remainder].reshape(-1, uut.nchan()).T
+        
+        
+        for idx, dat in enumerate(_data):
+            print(f"{idx} {dat}")
+        print(_data)
+        plt.plot(_data[0])
+        plt.show()
+        differences = np.diff(_data[32])
+        are_differences_one = np.all(differences == 1)
+        print(are_differences_one)
+        exit()
+        #.reshape(uut.nchan(), -1)
+        print()
+        count = 0
+        for idx, dat in enumerate(data):
+            print(f"[{idx}] {dat[0:20]}")
+            count+=1
+            if count > 48:
+                break
+        
+        
+        exit()
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            
+            with open(filename, "wb") as fp:
+    
+                sock.connect((uut.hostname, port))
+                time_start = time.time()
+                total_data = 0
+                while True:
+                    nrx = sock.recv_into(view)
+                    print(f"nrx {nrx}")
+                    print(f"buffer {buffer} {len(buffer)}")
+                    print(f"view {view} {len(view)}")
+                    
+                    
+                    if nrx < viewlen:
+                        break
+                    
+                    if runtime and time.time() - time_start > runtime:
+                        break
+                    
+                    if max_data and total_data >= max_data:
+                        break
+                    
+                    fp.write(buffer)
+                
+                #write data to file
+                
+            PR.Red('DONE')
+            print(f"nrx {nrx}")
+            print(f"buffer {buffer} {len(buffer)}")
+            print(f"view {view} {len(view)}")
+            
+            data = np.fromfile(filename, dtype=np.int16)
+            exit()
+            #.reshape(uut.nchan(), -1)
+            print()
+            count = 0
+            for idx, dat in enumerate(data):
+                print(f"[{idx}] {dat}")
+                count+=1
+                if count > 48:
+                    break
+        print(data)
+            
+                
+        exit()
+        
+        
+        """
+        hapi stream way
+        create bytearray len * dat size
+        memory view cast b
+        
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        data_size = 2
+        length = 1024
+        buffer = bytearray(length*data_size)
+        view = memoryview(buffer).cast('B')
+        sock.connect((hostname, 4210))
+        while true:
+            sock.recv_into(view)
+        """
+        
+        
+        return
+        """
+        print('init stream')
+        savedir = 'temp'
+        filename = f"{uut.hostname}.CH{uut.nchan}.dat"
+        os.makedirs(savedir, exist_ok=True)
+        savepath = os.path.join(savedir, filename)
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect((uut.hostname, 4210))
+        with open(savepath, 'wb') as f:
+            data = sock.recv(blen)
+            t0 = time.time()
+            print('pre looopp')
+            while time.time() - t0 < runtime:
+                data = sock.recv(blen)
+                #print()
+                #print(f"{data} {type(data)} {len(data)} {int(time.time() - t0)}")
+                if not data:
+                    print('no data')
+                    break
+                f.write(data)
+                
+        sock.close()
+        array = np.fromfile(savepath)
+        print(array)
+        array = array.reshape(8,-1)
+        print(array)
+        plt.plot(array[0])
+        plt.show()
+        print('stream end')
+        """
+        
+        
+"""
+If name != main do thing here
+
+
+start th lite 
+    run test
+
+"""
