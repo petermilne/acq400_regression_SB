@@ -1,24 +1,31 @@
-acq400_regression
+# acq400_regression
+
 
 a suite of tests to test D-tacq uut functionality and save the results
 
 
 
-test_handler
-    -used to invoke each test, collect data and store results
-uut_handler
-    -used to control uuts asyncrosonousl way 
-misc
-    -stand alone helper functions 
+test_handler:
+- used to invoke each test, collect data and store results
+
+uut_handler:
+- Mass control uuts asynchronously
+
+misc:
+- stand alone helper functions 
 
 
+### Installing
+```
+git clone https://github.com/D-TACQ/acq400_hapi
+cd acq400_hapi
+git clone https://github.com/sambelltacq/acq400_regression
+```
 
-
-
-
+### Running
 
 test results are saved in named dirs 
-
+```
 //Local saved results format
 results/
 ├── ACQ435ELF/
@@ -41,7 +48,8 @@ results/
 │   |   |   ├── uut1.timestamp.png
 │   |   |   ├── uut2.timestamp.2CH.dat
 │   |   |   ├── uut2.timestamp.png
-
+```
+```
 //JSON Example format
 {
     "uuts": [ # list of uuts and their configuration
@@ -108,3 +116,4 @@ results/
         },
     ],
 }
+```
