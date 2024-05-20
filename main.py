@@ -2,7 +2,7 @@
 
 """Example acq400_regression init script
 
-    ./acq400_regression/main.py --test=post --siggen=SG1923 acq2106_396
+    ./acq400_regression/main.py --test=stream --siggen=SG1923 acq2106_396
 """
 
 from acq400_regression import Test_Handler, get_default_parser
